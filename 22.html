@@ -1,0 +1,67 @@
+<html>
+<head>
+    <script type="text/javascript">
+        function disp_confirm()
+        {
+            var r=confirm("Press a button")
+            if (r==true)
+            {
+                document.write("You pressed OK!")
+                window.opener.reload();
+            }
+            else
+            {
+                window.close();
+            }
+        }
+    </script>
+</head>
+<body>
+
+<input type="button" onclick="disp_confirm()" value="Display a confirm box" />
+<script>
+    /*------设置病人的信息--------*/
+    $(function () {
+//            $("#LinkDIV").html('<span data-toggle="popover" id="temp3">显示个人信息</span>');
+        $('[data-toggle="popover"]').each(function () {
+            var element = $(this);
+            var id = element.attr('id');
+            element.popover({
+                trigger: 'manual',
+                placement: 'bottom', //top, bottom, left or right
+//                    title:'个人信息',
+                html: 'true',
+                content: ContentMethod(pId),
+            }).on("mouseenter", function () {
+                var _this = this;
+                $(this).popover("show");
+                $(this).siblings(".popover").on("mouseleave", function () {
+                    $(_this).popover('hide');
+                });
+            }).on("mouseleave", function () {
+                var _this = this;
+                setTimeout(function () {
+                    if (!$(".popover:hover").length) {
+                        $(_this).popover("hide")
+                    }
+                }, 100);
+            });
+        });
+    });
+    function ContentMethod(pId) {
+        $.ajax({
+            type:"post",
+            url :"patient.action?id="+pId,
+            dataType:"json",
+            async:false,
+            success:function(msg){
+                return '<div>姓名:'msg.pName'<br/>' +
+                '性别:'+msg.sex+'<br/>' +
+                '年龄:'+msg.pAge+'<br/>' +
+                '</div>';
+            }
+        });
+    }
+</script>
+</body>
+</html>
